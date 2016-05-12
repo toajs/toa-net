@@ -1,0 +1,46 @@
+{
+  "name": "toa-net",
+  "description": "JSON-RPC 2.0 client/server over TCP net.",
+  "authors": [
+    "Yan Qing <admin@zensh.com>"
+  ],
+  "version": "0.1.0",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:toajs/toa-net.git"
+  },
+  "homepage": "https://github.com/toajs/toa-net",
+  "engines": {
+    "node": ">=1"
+  },
+  "keywords": [
+    "JSON-RPC",
+    "TCP",
+    "net",
+    "framework",
+    "thunk",
+    "thunks",
+    "yield",
+    "generator"
+  ],
+  "dependencies": {
+    "jsonrpc-lite": "^1.1.1",
+    "jws": "^3.1.3",
+    "respjs": "^3.1.2",
+    "thunks": "^4.1.8"
+  },
+  "devDependencies": {
+    "standard": "^7.0.1",
+    "tman": "^0.9.4"
+  },
+  "scripts": {
+    "test": "standard && NODE_ENV=test tman test/*.js test/**/*.js",
+    "test-cov": "NODE_ENV=test istanbul cover tman test/*.js test/**/*.js"
+  },
+  "files": [
+    "README.md",
+    "lib"
+  ]
+}
