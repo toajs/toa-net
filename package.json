@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/toajs/toa-net",
   "engines": {
-    "node": ">=1"
+    "node": ">=4"
   },
   "keywords": [
     "JSON-RPC",
@@ -36,8 +36,7 @@
     "tman": "^0.9.4"
   },
   "scripts": {
-    "test": "standard && NODE_ENV=test tman test/*.js test/**/*.js",
-    "test-cov": "NODE_ENV=test istanbul cover tman test/*.js test/**/*.js"
+    "test": "standard && tman"
   },
   "files": [
     "README.md",
