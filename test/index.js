@@ -8,6 +8,8 @@ const assert = require('assert')
 const thunk = require('thunks')()
 const net = require('..')
 
+var _port = 10000
+
 tman.suite('Auth', function () {
   tman.it('work with a secret', function () {
     let auth = new net.Auth('secretxxx')
@@ -47,10 +49,10 @@ tman.suite('Auth', function () {
 })
 
 tman.suite('Server & Client', function () {
-  let port = 10000
   this.timeout(10000)
 
   tman.it('work without auth', function * () {
+    let port = _port++
     let server = new net.Server(function (socket) {
       socket.on('message', (message) => {
         if (message.type === 'request') {
@@ -58,7 +60,7 @@ tman.suite('Server & Client', function () {
         }
       })
     })
-    server.listen(port)
+    yield (done) => server.listen(port, done)
 
     let client = new net.Client()
     client.connect(port)
@@ -78,6 +80,7 @@ tman.suite('Server & Client', function () {
   })
 
   tman.it('work with auth', function * () {
+    let port = _port++
     let auth = new net.Auth('secretxxx')
     let server = new net.Server(function (socket) {
       assert.strictEqual(socket.session.id, 'test')
@@ -88,7 +91,7 @@ tman.suite('Server & Client', function () {
         }
       })
     }, {auth: auth})
-    server.listen(port)
+    yield (done) => server.listen(port, done)
 
     let clientAuthorized = false
     let client = new net.Client({auth: auth.sign({id: 'test'})})
@@ -113,6 +116,7 @@ tman.suite('Server & Client', function () {
   })
 
   tman.it('iterator in server-side', function (callback) {
+    let port = _port++
     let auth = new net.Auth('secretxxx')
     let server = new net.Server(function (socket) {
       assert.strictEqual(socket.session.id, 'test')
@@ -123,11 +127,11 @@ tman.suite('Server & Client', function () {
         for (let value of socket) {
           let message = yield value
 
+          if (!message) continue
           if (message.type === 'request') {
             assert.strictEqual(message.payload.method, 'echo')
             result.push(message.payload.params)
             socket.success(message.payload.id, 'OK')
-            socket.destroy()
           } else {
             assert.strictEqual(message.type, 'notification')
             assert.strictEqual(message.payload.method, 'hello')
@@ -139,18 +143,20 @@ tman.suite('Server & Client', function () {
         yield (done) => server.close(done)
       })(callback)
     }, {auth: auth})
-    server.listen(port)
 
-    let client = new net.Client({auth: auth.sign({id: 'test'})})
-    client.connect(port)
+    server.listen(port, () => {
+      let client = new net.Client({auth: auth.sign({id: 'test'})})
+      client.connect(port)
 
-    client.notification('hello', [1])
-    client.notification('hello', [2])
-    client.notification('hello', [3])
-    client.request('echo', {a: 4})()
+      client.notification('hello', [1])
+      client.notification('hello', [2])
+      client.notification('hello', [3])
+      client.request('echo', {a: 4})(() => client.destroy())
+    })
   })
 
   tman.it('iterator in client-side', function * () {
+    let port = _port++
     let auth = new net.Auth('secretxxx')
     let server = new net.Server(function (socket) {
       assert.strictEqual(socket.session.id, 'test')
@@ -160,7 +166,8 @@ tman.suite('Server & Client', function () {
       socket.notification('hello', [3])
       socket.request('echo', {a: 4})()
     }, {auth: auth})
-    server.listen(port)
+
+    yield (done) => server.listen(port, done)
 
     let client = new net.Client({auth: auth.sign({id: 'test'})})
     client.connect(port)
@@ -189,14 +196,55 @@ tman.suite('Server & Client', function () {
   tman.it.skip('createError', function () {})
   tman.it.skip('throw error', function () {})
   tman.it.skip('handleJsonRpc', function () {})
-  tman.it.skip('reconnect', function () {})
+
+  tman.it('reconnect', function * () {
+    let port = _port++
+    let auth = new net.Auth('secretxxx')
+    let recvSocket = 0
+    let server = new net.Server(function (socket) {
+      recvSocket++
+      thunk(function * () {
+        for (let value of socket) {
+          let message = yield value
+          if (!message) continue
+          socket.success(message.payload.id, message.payload.params.index)
+        }
+      })()
+    }, {auth: auth})
+
+    yield (done) => server.listen(port, done)
+
+    let client = new net.Client({auth: auth.sign({id: 'test'})})
+    client.connect(port)
+
+    let reconnectingMsg = null
+    client.on('reconnecting', (msg) => {
+      reconnectingMsg = msg
+    })
+    yield (done) => client.once('connect', done)
+
+    assert.strictEqual(1, yield client.request('test', {index: 1}))
+    assert.strictEqual(2, yield client.request('test', {index: 2}))
+    assert.strictEqual(3, yield client.request('test', {index: 3}))
+
+    client.socket.destroy() // cut socket, then auto reconnect
+    yield (done) => client.once('connect', done)
+    assert.strictEqual(4, yield client.request('test', {index: 4}))
+    assert.strictEqual(5, yield client.request('test', {index: 5}))
+
+    assert.strictEqual(recvSocket, 2)
+    assert.strictEqual(reconnectingMsg.attempts, 1)
+
+    client.destroy()
+    yield (done) => server.close(done)
+  })
 })
 
 tman.it('Chaos', function * () {
   this.timeout(0)
 
   let index = 0
-  let port = 10000
+  let port = _port++
   let job = {
     name: 'abcdefghijklmnopqrst',
     email: 'abcdefghijklmnopqrst@test.com',
@@ -205,7 +253,6 @@ tman.it('Chaos', function * () {
   let count = 0
   let auth = new net.Auth('secretxxx')
   let server = new net.Server(function (socket) {
-    socket.on('close', () => console.log('server socket closed'))
     thunk(function * () {
       for (let value of socket) {
         let message = yield value
@@ -218,11 +265,10 @@ tman.it('Chaos', function * () {
       }
     })()
   }, {auth: auth})
-  server.listen(port)
+  yield (done) => server.listen(port, done)
 
   let client = new net.Client({auth: auth.sign({id: 'test'})})
   client.connect(port)
-
   yield (done) => client.once('connect', done)
 
   let time = Date.now()
