@@ -4,7 +4,7 @@
   "authors": [
     "Yan Qing <admin@zensh.com>"
   ],
-  "version": "0.2.2",
+  "version": "0.2.3",
   "main": "lib/index.js",
   "license": "MIT",
   "repository": {
@@ -32,8 +32,8 @@
     "thunks": "^4.1.8"
   },
   "devDependencies": {
-    "standard": "^7.0.1",
-    "tman": "^0.9.4"
+    "standard": "^7.1.0",
+    "tman": "^0.9.6"
   },
   "scripts": {
     "test": "standard && tman"

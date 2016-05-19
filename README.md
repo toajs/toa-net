@@ -115,6 +115,10 @@ const server = new net.Server(function (socket) {
 1. `connectionListener`: *Required*, Type: `Function`.
 2. `options.auth`: *Optional*, Type: `Auth` instance.
 
+#### Event: 'close'
+#### Event: 'error'
+#### Event: 'listening'
+
 #### server.address()
 
 #### server.getConnections()
@@ -125,6 +129,14 @@ const server = new net.Server(function (socket) {
 Same as node.js `server.listen`
 
 ### Class toaNet.Client
+
+#### Event: 'close'
+#### Event: 'connect'
+#### Event: 'message'
+#### Event: 'drain'
+#### Event: 'end'
+#### Event: 'error'
+#### Event: 'timeout'
 
 #### new toaNet.Client([options])
 Creates RPC client.
