@@ -24,7 +24,7 @@ thunk(function * () {
     location: 'zhangjiang, shanghai, china'
   }
 
-  while (index < 10000) {
+  while (index < 100000) {
     let id = ++index
     let message = Object.assign({id: id}, job)
     len += JSON.stringify(message).length
