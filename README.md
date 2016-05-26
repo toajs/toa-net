@@ -86,6 +86,25 @@ client.request('echo', {a: 4})((err, res) => {
 })
 ```
 
+## Bench
+
+### Run bench
+1. Run server in some where:
+```
+node bench/server
+```
+2. Update the server host, Run:
+```
+node bench/client
+```
+
+### Simple bench result, 10000 messages, 1000 cocurrency
+1. local -> local, no-delay: **1073ms, 93196.64ops/s, 1135.97kb/s**
+2. local -> local, delay 1000ms: **10348ms, 9663.70ops/s, 117.79kb/s**
+3. aliyun -> aws: **264321ms, 378.33ops/s, 4.61kb/s**
+4. aws -> aliyun: **82129ms, 1217.60ops/s, 14.84kb/s**
+5. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 12413.11ops/s, 151.30kb/s**
+
 ## Install
 
 ```sh
