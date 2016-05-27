@@ -6,12 +6,15 @@ const thunk = require('thunks')()
 const auth = new net.Auth('secretxxx')
 
 const server = new net.Server(function (socket) {
+  let address = socket.address()
+  ilog.info(`[${address.address}]:${address.port} connected`)
   thunk(function * () {
     for (let value of socket) {
       let message = yield value
-      if (message) socket.success(message.payload.id, message.payload.params.id)
-      // if (message) thunk.delay(1000)(() => socket.success(message.payload.id, message.payload.params.id))
+      if (message) socket.success(message.payload.id, message.payload.id)
+      // if (message) thunk.delay(1000)(() => socket.success(message.payload.id, message.payload.id))
     }
+    ilog.info(`[${address.address}]:${address.port} disconnected`)
   })(ilog.error)
 }, {auth: auth})
 

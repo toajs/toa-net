@@ -98,12 +98,27 @@ node bench/server
 node bench/client
 ```
 
+### Simple bench result, 10000 messages, 1000 cocurrency
+```js
+// message
+{
+  name: 'abcdefghijklmnopqrst',
+  email: 'abcdefghijklmnopqrst@test.com',
+  location: 'zhangjiang, shanghai, china'
+}
+```
+
+1. local -> local, no-delay: **1073ms, 9319ops/s, 1135.97kb/s**
+2. local -> local, delay 1000ms: **10348ms, 966ops/s, 117.79kb/s**
+3. aliyun -> aws: **264321ms, 37ops/s, 4.61kb/s**
+4. aws -> aliyun: **82129ms, 121ops/s, 14.84kb/s**
+5. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 1241ops/s, 151.30kb/s**
+
 ## Install
 
 ```sh
 npm install toa-net
 ```
-
 
 ## API
 
