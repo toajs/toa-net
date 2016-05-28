@@ -189,7 +189,7 @@ client.request('echo', {name: 'zensh'})((err, res) => {
 1. `method`: *Required*, Type: `String`.
 2. `params`: *Optional*, Type: `Object|Array`.
 
-#### client.notification(method, params)
+#### client.notification(method[, params])
 Creates a JSON-RPC 2.0 notification to another side. No return.
 
 ```js
