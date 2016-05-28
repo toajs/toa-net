@@ -13,13 +13,14 @@ thunk(function * () {
   ilog.info(`Connected to [${client.socket.remoteAddress}]:${client.socket.remotePort}`)
 
   let count = 100000
+  let finish = 0
   let queue = []
   let cocurrency = 1000
   let time = Date.now()
 
   while (count--) {
     queue.push(client.request('ping')((_, res) => {
-      if (!(res % 1000)) process.stdout.write('.')
+      if (!(finish++ % 1000)) process.stdout.write('.')
     }))
     if (queue.length >= cocurrency) yield queue.shift()
   }

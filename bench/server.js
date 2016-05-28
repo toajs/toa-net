@@ -11,7 +11,7 @@ const server = new net.Server(function (socket) {
   thunk(function * () {
     for (let value of socket) {
       let message = yield value
-      if (message) socket.success(message.payload.id, message.payload.id)
+      if (message) socket.success(message.payload.id, 'pong')
       // if (message) thunk.delay(1000)(() => socket.success(message.payload.id, message.payload.id))
     }
     ilog.info(`[${address.address}]:${address.port} disconnected`)

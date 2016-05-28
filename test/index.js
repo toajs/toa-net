@@ -291,16 +291,4 @@ tman.it('Chaos', function * () {
 
   client.destroy()
   yield (done) => server.close(done)
-
-  // ### 10 万次常规 message 请求测试：
-  // - 无延时，串行，7380.62 ops/s
-  // - 无延时，1000 并发，11450.82 ops/s
-  // - 100ms 延时，1000 并发，5478.25 ops/s
-  // - 500ms 延时，1000 并发，1768.35 ops/s
-  //
-  // **当前 aliyun 与 aws 的网络状况：单次请求 1000ms 左右**
-  //
-  // - 1000ms 延时，1000 并发，923.99 ops/s
-  // - 1000ms 延时，2000 并发，1791.12 ops/s
-  // - 1000ms 延时，10000 并发，4861.721 ops/s
 })
