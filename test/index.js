@@ -193,9 +193,130 @@ tman.suite('Server & Client', function () {
     yield (done) => server.close(done)
   })
 
-  tman.it.skip('createError', function () {})
-  tman.it.skip('throw error', function () {})
-  tman.it.skip('handleJsonRpc', function () {})
+  tman.it('createError', function () {
+    let err = null
+    err = net.Client.prototype.createError()
+    assert.strictEqual(err instanceof net.jsonrpc.JsonRpcError, true)
+    assert.strictEqual(err.code, 0)
+
+    err = net.Client.prototype.createError('some error', 1, [1, 2, 3])
+    assert.strictEqual(err instanceof net.jsonrpc.JsonRpcError, true)
+    assert.strictEqual(err.message, 'some error')
+    assert.strictEqual(err.code, 1)
+    assert.deepEqual(err.data, [1, 2, 3])
+
+    let err1 = net.Client.prototype.createError(err)
+    assert.strictEqual(err1, err)
+
+    let err2 = net.Client.prototype.createError(err1, 2)
+    assert.strictEqual(err2, err1)
+    assert.strictEqual(err2.code, 2)
+
+    err = new Error('some error')
+    err.code = 404
+
+    err1 = net.Client.prototype.createError(err)
+    assert.strictEqual(err1 instanceof net.jsonrpc.JsonRpcError, true)
+    assert.strictEqual(err1.code, 404)
+
+    err2 = net.Client.prototype.createError(err, 400, [1, 2, 3])
+    assert.strictEqual(err2 instanceof net.jsonrpc.JsonRpcError, true)
+    assert.strictEqual(err2.code, 400)
+    assert.deepEqual(err2.data, [1, 2, 3])
+
+    err = net.Client.prototype.createError(-32600)
+    assert.strictEqual(err instanceof net.jsonrpc.JsonRpcError, true)
+  })
+
+  tman.it('throw', function () {
+    assert.throws(() => {
+      net.Client.prototype.throw(-32600)
+    }, net.jsonrpc.JsonRpcError)
+
+    assert.throws(() => {
+      net.Client.prototype.throw(new Error('some error'))
+    }, net.jsonrpc.JsonRpcError)
+
+    assert.throws(() => {
+      net.Client.prototype.throw(net.Client.prototype.createError())
+    }, net.jsonrpc.JsonRpcError)
+
+    assert.throws(() => {
+      net.Client.prototype.throw('some error', 400)
+    }, net.jsonrpc.JsonRpcError)
+  })
+
+  tman.suite('handleJsonRpc', function () {
+    tman.it('handle success', function (callback) {
+      let port = _port++
+      let auth = new net.Auth('secretxxx')
+      let server = new net.Server(function (socket) {
+        thunk(function * () {
+          let result = []
+
+          for (let value of socket) {
+            let message = yield value
+            if (!message) continue
+            yield socket.handleJsonRpc(message.payload, function (jsonRpc) {
+              result.push(jsonRpc.params)
+              return 'OK'
+            })
+          }
+
+          assert.deepEqual(result, [[1], [2], [3], {a: 4}])
+          yield (done) => server.close(done)
+        })(callback)
+      }, {auth: auth})
+
+      server.listen(port, () => {
+        let client = new net.Client({auth: auth.sign({id: 'test'})})
+        client.connect(port)
+
+        client.notification('hello', [1])
+        client.notification('hello', [2])
+        client.notification('hello', [3])
+        client.request('echo', {a: 4})((_, res) => {
+          assert.strictEqual(res, 'OK')
+          client.destroy()
+        })
+      })
+    })
+
+    tman.it('handle error', function (callback) {
+      let port = _port++
+      let auth = new net.Auth('secretxxx')
+      let server = new net.Server(function (socket) {
+        thunk(function * () {
+          let result = []
+
+          for (let value of socket) {
+            let message = yield value
+            if (!message) continue
+            yield socket.handleJsonRpc(message.payload, function (jsonRpc) {
+              result.push(jsonRpc.params)
+              if (jsonRpc.name === 'request') this.throw('some error', 499, result)
+            })
+          }
+
+          yield (done) => server.close(done)
+        })(callback)
+      }, {auth: auth})
+
+      server.listen(port, () => {
+        let client = new net.Client({auth: auth.sign({id: 'test'})})
+        client.connect(port)
+
+        client.notification('hello', [1])
+        client.notification('hello', [2])
+        client.notification('hello', [3])
+        client.request('echo', {a: 4})((err, res) => {
+          assert.strictEqual(err instanceof net.jsonrpc.JsonRpcError, true)
+          assert.strictEqual(err.code, 499)
+          client.destroy()
+        })
+      })
+    })
+  })
 
   tman.it('reconnect', function * () {
     let port = _port++

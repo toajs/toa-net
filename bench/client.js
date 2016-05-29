@@ -15,7 +15,7 @@ thunk(function * () {
   let count = 100000
   let finish = 0
   let queue = []
-  let cocurrency = 1000
+  let cocurrency = 10000
   let time = Date.now()
 
   while (count--) {
@@ -27,7 +27,7 @@ thunk(function * () {
   // wait for all request.
   yield queue
   time = Date.now() - time
-  ilog('\nFinished,', cocurrency, 'cocurrency,', time, 'ms,', (100000 / (time / 1000)).toFixed(2), 'ops/s')
+  ilog('\nFinished,', cocurrency, 'cocurrency,', time + 'ms,', (100000 / (time / 1000)).toFixed(2) + 'ops/s')
 
   client.destroy()
 })(ilog.error)

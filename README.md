@@ -98,7 +98,13 @@ node bench/server
 node bench/client
 ```
 
-### Simple bench result, 10000 messages, 1000 cocurrency
+### 100000 Ping/Pong messages
+1. local -> local, no-delay: **1000 cocurrency, 3180ms, 31446ops/s**
+2. local -> local, delay 1000ms: **1000 cocurrency, 100590ms, 994ops/s**
+3. local -> local, delay 1000ms: **5000 cocurrency, 20869ms, 4791ops/s**
+4. local -> local, delay 1000ms: **10000 cocurrency, 11074ms, 9030ops/s**
+
+### 10000 simple messages, 1000 cocurrency
 ```js
 // message
 {
@@ -107,12 +113,9 @@ node bench/client
   location: 'zhangjiang, shanghai, china'
 }
 ```
-
-1. local -> local, no-delay: **1073ms, 9319ops/s, 1135.97kb/s**
-2. local -> local, delay 1000ms: **10348ms, 966ops/s, 117.79kb/s**
-3. aliyun -> aws: **264321ms, 37ops/s, 4.61kb/s**
-4. aws -> aliyun: **82129ms, 121ops/s, 14.84kb/s**
-5. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 1241ops/s, 151.30kb/s**
+1. aliyun -> aws: **264321ms, 37ops/s, 4.61kb/s**
+2. aws -> aliyun: **82129ms, 121ops/s, 14.84kb/s**
+3. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 1241ops/s, 151.30kb/s**
 
 ## Install
 
