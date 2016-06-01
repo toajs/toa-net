@@ -121,6 +121,41 @@ tman.suite('Server & Client', function () {
     yield (done) => server.close(done)
   })
 
+  tman.it('when auth error', function (callback) {
+    let port = _port++
+    let auth = new net.Auth('secretxxx')
+    let server = new net.Server(function (socket) {
+      socket.on('message', (message) => {
+        if (message.type === 'request') {
+          socket.success(message.payload.id, message.payload.params)
+        }
+      })
+    })
+    server.getAuthenticator = function () {
+      return (signature) => auth.verify(signature)
+    }
+    server.listen(port)
+
+    let clientAuthorized = false
+    let client = new net.Client()
+      .on('auth', () => {
+        clientAuthorized = true
+      })
+    client.getSignature = function () {
+      return 'error signature'
+    }
+    client.connect(port)
+
+    client.once('error', (err) => {
+      assert.strictEqual(err.message, 'Unauthorized')
+      assert.strictEqual(err.code, 401)
+      assert.strictEqual(err.data, 'Error: Invalid signature')
+      assert.strictEqual(clientAuthorized, false)
+      client.destroy()
+      server.close(callback)
+    })
+  })
+
   tman.it('iterator in server-side', function (callback) {
     let port = _port++
     let auth = new net.Auth('secretxxx')

@@ -4,7 +4,7 @@
   "authors": [
     "Yan Qing <admin@zensh.com>"
   ],
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "lib/index.js",
   "license": "MIT",
   "repository": {
@@ -26,7 +26,7 @@
     "generator"
   ],
   "dependencies": {
-    "jsonrpc-lite": "^1.2.0",
+    "jsonrpc-lite": "^1.2.1",
     "jws": "^3.1.3",
     "respjs": "^3.1.2",
     "thunks": "^4.2.0"
