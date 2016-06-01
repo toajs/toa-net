@@ -16,6 +16,9 @@ const server = new net.Server(function (socket) {
     }
     ilog.info(`[${address.address}]:${address.port} disconnected`)
   })(ilog.error)
-}, {auth: auth})
+})
+server.getAuthenticator = function () {
+  return (signature) => auth.verify(signature)
+}
 
 server.listen(3001, () => ilog.info('Server start'))

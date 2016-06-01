@@ -20,9 +20,19 @@ const server = new net.Server(function (socket) {
       socket.success(message.payload.id, message.payload.params)
     }
   })
-}, {auth: auth}).listen(8000)
+}).listen(8000)
 
-const client = new net.Client({auth: auth.sign({id: 'example'})}).connect(8000)
+// Enable authentication for server
+server.getAuthenticator = function () {
+  return (signature) => auth.verify(signature)
+}
+
+const client = new net.Client()
+// Enable authentication for client
+client.getSignature = function () {
+  return auth.sign({id: 'clientId'})
+}
+client.connect(8000)
 
 client.notification('hello', [1])
 client.notification('hello', [2])

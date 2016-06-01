@@ -34,10 +34,18 @@ const server = new net.Server(function (socket) {
       socket.success(message.payload.id, message.payload.params)
     }
   })
-}, {auth: auth}).listen(8000)
+}).listen(8000)
+// Enable authentication for server
+server.getAuthenticator = function () {
+  return (signature) => auth.verify(signature)
+}
 
-const client = new net.Client({auth: auth.sign({id: 'example'})}).connect(8000)
-
+const client = new net.Client({auth: auth.sign({id: 'example'})})
+// Enable authentication for client
+client.getSignature = function () {
+  return auth.sign({id: 'clientId'})
+}
+client.connect(8000)
 client.notification('hello', [1])
 client.notification('hello', [2])
 client.notification('hello', [3])
@@ -131,7 +139,7 @@ const toaNet = require('toa-net')
 
 ### Class toaNet.Server
 
-#### new toaNet.Server(connectionListener[, options])
+#### new toaNet.Server(connectionListener)
 Create RPC server.
 
 ```js
@@ -143,11 +151,30 @@ const server = new net.Server(function (socket) {
 ```
 
 1. `connectionListener`: *Required*, Type: `Function`.
-2. `options.auth`: *Optional*, Type: `Auth` instance.
 
 #### Event: 'close'
 #### Event: 'error'
 #### Event: 'listening'
+
+#### server.getAuthenticator()
+
+Abstract method. Should be overridden to enable authentication.
+
+Default:
+```js
+server.getAuthenticator = function () {
+  return null // Disable authentication
+}
+```
+
+Enable authentication:
+```js
+const auth = new net.Auth('secretxxx')
+
+server.getAuthenticator = function () {
+  return (signature) => auth.verify(signature)
+}
+```
 
 #### server.address()
 
@@ -162,23 +189,42 @@ Same as node.js `server.listen`
 
 #### Event: 'close'
 #### Event: 'connect'
+#### Event: 'auth'
 #### Event: 'message'
 #### Event: 'drain'
 #### Event: 'end'
 #### Event: 'error'
 #### Event: 'timeout'
 
-#### new toaNet.Client([options])
+#### new toaNet.Client()
 Creates RPC client.
 
 ```js
 const client = new net.Client().connect(8000)
 ```
 
-1. `options.auth`: *Optional*, Type: `Auth` instance.
-
 #### client.connect(...)
 Same as node.js `socket.connect`
+
+#### client.getSignature()
+
+Abstract method. Should be overridden to enable authentication.
+
+Default:
+```js
+client.getSignature = function () {
+  return '' // Disable authentication
+}
+```
+
+Enable authentication:
+```js
+const auth = new net.Auth('secretxxx')
+
+client.getSignature = function () {
+  return auth.sign({id: 'example'})
+}
+```
 
 #### client.request(method[, params])
 Creates a JSON-RPC 2.0 request to another side. Returns thunk function.

@@ -4,12 +4,15 @@ const ilog = require('ilog')
 const net = require('..')
 const thunk = require('thunks')()
 const auth = new net.Auth('secretxxx')
-const client = new net.Client({auth: auth.sign({id: 'test'})})
+const client = new net.Client()
 
+client.getSignature = function () {
+  return auth.sign({id: 'test'})
+}
 client.connect(3001, '127.0.0.1')
 
 thunk(function * () {
-  yield (done) => client.once('connect', done)
+  yield (done) => client.once('auth', done.bind(null, null))
   ilog.info(`Connected to [${client.socket.remoteAddress}]:${client.socket.remotePort}`)
 
   let count = 100000

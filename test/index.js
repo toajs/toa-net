@@ -90,14 +90,20 @@ tman.suite('Server & Client', function () {
           socket.success(message.payload.id, message.payload.params)
         }
       })
-    }, {auth: auth})
+    })
+    server.getAuthenticator = function () {
+      return (signature) => auth.verify(signature)
+    }
     yield (done) => server.listen(port, done)
 
     let clientAuthorized = false
-    let client = new net.Client({auth: auth.sign({id: 'test'})})
+    let client = new net.Client()
       .on('auth', () => {
         clientAuthorized = true
       })
+    client.getSignature = function () {
+      return auth.sign({id: 'test'})
+    }
     client.connect(port)
 
     client.notification('hello', [1])
@@ -142,10 +148,16 @@ tman.suite('Server & Client', function () {
         assert.deepEqual(result, [[1], [2], [3], {a: 4}])
         yield (done) => server.close(done)
       })(callback)
-    }, {auth: auth})
+    })
+    server.getAuthenticator = function () {
+      return (signature) => auth.verify(signature)
+    }
 
     server.listen(port, () => {
-      let client = new net.Client({auth: auth.sign({id: 'test'})})
+      let client = new net.Client()
+      client.getSignature = function () {
+        return auth.sign({id: 'test'})
+      }
       client.connect(port)
 
       client.notification('hello', [1])
@@ -165,11 +177,17 @@ tman.suite('Server & Client', function () {
       socket.notification('hello', [2])
       socket.notification('hello', [3])
       socket.request('echo', {a: 4})()
-    }, {auth: auth})
+    })
+    server.getAuthenticator = function () {
+      return (signature) => auth.verify(signature)
+    }
 
     yield (done) => server.listen(port, done)
 
-    let client = new net.Client({auth: auth.sign({id: 'test'})})
+    let client = new net.Client()
+    client.getSignature = function () {
+      return auth.sign({id: 'test'})
+    }
     client.connect(port)
 
     let result = []
@@ -266,10 +284,16 @@ tman.suite('Server & Client', function () {
           assert.deepEqual(result, [[1], [2], [3], {a: 4}])
           yield (done) => server.close(done)
         })(callback)
-      }, {auth: auth})
+      })
+      server.getAuthenticator = function () {
+        return (signature) => auth.verify(signature)
+      }
 
       server.listen(port, () => {
-        let client = new net.Client({auth: auth.sign({id: 'test'})})
+        let client = new net.Client()
+        client.getSignature = function () {
+          return auth.sign({id: 'test'})
+        }
         client.connect(port)
 
         client.notification('hello', [1])
@@ -300,10 +324,16 @@ tman.suite('Server & Client', function () {
 
           yield (done) => server.close(done)
         })(callback)
-      }, {auth: auth})
+      })
+      server.getAuthenticator = function () {
+        return (signature) => auth.verify(signature)
+      }
 
       server.listen(port, () => {
-        let client = new net.Client({auth: auth.sign({id: 'test'})})
+        let client = new net.Client()
+        client.getSignature = function () {
+          return auth.sign({id: 'test'})
+        }
         client.connect(port)
 
         client.notification('hello', [1])
@@ -331,11 +361,17 @@ tman.suite('Server & Client', function () {
           socket.success(message.payload.id, message.payload.params.index)
         }
       })()
-    }, {auth: auth})
+    })
+    server.getAuthenticator = function () {
+      return (signature) => auth.verify(signature)
+    }
 
     yield (done) => server.listen(port, done)
 
-    let client = new net.Client({auth: auth.sign({id: 'test'})})
+    let client = new net.Client()
+    client.getSignature = function () {
+      return auth.sign({id: 'test'})
+    }
     client.connect(port)
 
     let reconnectingMsg = null
@@ -385,10 +421,16 @@ tman.it('Chaos', function * () {
         }
       }
     })()
-  }, {auth: auth})
+  })
+  server.getAuthenticator = function () {
+    return (signature) => auth.verify(signature)
+  }
   yield (done) => server.listen(port, done)
 
-  let client = new net.Client({auth: auth.sign({id: 'test'})})
+  let client = new net.Client()
+  client.getSignature = function () {
+    return auth.sign({id: 'test'})
+  }
   client.connect(port)
   yield (done) => client.once('connect', done)
 
