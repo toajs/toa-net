@@ -204,6 +204,7 @@ tman.suite('Server & Client', function () {
 
   tman.it('iterator in client-side', function * () {
     let port = _port++
+    let result = []
     let auth = new net.Auth('secretxxx')
     let server = new net.Server(function (socket) {
       assert.strictEqual(socket.session.id, 'test')
@@ -211,7 +212,11 @@ tman.suite('Server & Client', function () {
       socket.notification('hello', [1])
       socket.notification('hello', [2])
       socket.notification('hello', [3])
-      socket.request('echo', {a: 4})()
+      socket.request('echo', {a: 4})((_, res) => {
+        result.push(res)
+        assert.deepEqual(result, [[1], [2], [3], 'OK'])
+        server.close()
+      })
     })
     server.getAuthenticator = function () {
       return (signature) => auth.verify(signature)
@@ -225,14 +230,11 @@ tman.suite('Server & Client', function () {
     }
     client.connect(port)
 
-    let result = []
-
     for (let value of client) {
       let message = yield value
 
       if (message.type === 'request') {
         assert.strictEqual(message.payload.method, 'echo')
-        result.push(message.payload.params)
         client.success(message.payload.id, 'OK')
         client.destroy()
       } else {
@@ -241,9 +243,6 @@ tman.suite('Server & Client', function () {
         result.push(message.payload.params)
       }
     }
-
-    assert.deepEqual(result, [[1], [2], [3], {a: 4}])
-    yield (done) => server.close(done)
   })
 
   tman.it('createError', function () {
@@ -383,7 +382,46 @@ tman.suite('Server & Client', function () {
     })
   })
 
-  tman.it('reconnect', function * () {
+  tman.it('reconnect when server restart', function (callback) {
+    let port = _port++
+    let server = new net.Server(function (socket) {
+      assert.strictEqual(this.connections[socket.sid], socket)
+      socket.on('error', (err) => {
+        assert.strictEqual(err instanceof Error, true)
+      })
+    })
+
+    server.listen(port)
+
+    let client = new net.Client()
+    let reconnecting = false
+    let serverClosed = 0
+    client
+      .on('error', (err) => {
+        assert.strictEqual(err instanceof Error, true)
+      })
+      .on('connect', () => {
+        if (reconnecting) client.destroy()
+        else {
+          server.close(() => {
+            serverClosed++
+            server.listen(port)
+          })
+        }
+      })
+      .on('reconnecting', () => {
+        reconnecting = true
+      })
+      .on('close', () => {
+        assert.strictEqual(serverClosed, 1)
+        assert.strictEqual(reconnecting, true)
+        callback()
+      })
+
+    client.connect(port)
+  })
+
+  tman.it('reconnect when client closed', function * () {
     let port = _port++
     let auth = new net.Auth('secretxxx')
     let recvSocket = 0
