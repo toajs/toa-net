@@ -162,13 +162,11 @@ tman.suite('Server & Client', function () {
     let server = new net.Server(function (socket) {
       assert.strictEqual(socket.session.id, 'test')
 
+      let result = []
       thunk(function * () {
-        let result = []
-
         for (let value of socket) {
           let message = yield value
 
-          if (!message) continue
           if (message.type === 'request') {
             assert.strictEqual(message.payload.method, 'echo')
             result.push(message.payload.params)
@@ -182,6 +180,10 @@ tman.suite('Server & Client', function () {
 
         assert.deepEqual(result, [[1], [2], [3], {a: 4}])
         yield (done) => server.close(done)
+      })((err) => {
+        assert.strictEqual(err.message, 'The socket is closed!')
+        assert.deepEqual(result, [[1], [2], [3], {a: 4}])
+        return (done) => server.close(done)
       })(callback)
     })
     server.getAuthenticator = function () {
@@ -303,20 +305,19 @@ tman.suite('Server & Client', function () {
       let port = _port++
       let auth = new net.Auth('secretxxx')
       let server = new net.Server(function (socket) {
+        let result = []
         thunk(function * () {
-          let result = []
-
           for (let value of socket) {
             let message = yield value
-            if (!message) continue
             yield socket.handleJsonRpc(message.payload, function (jsonRpc) {
               result.push(jsonRpc.params)
               return 'OK'
             })
           }
-
+        })((err) => {
+          assert.strictEqual(err instanceof Error, true)
           assert.deepEqual(result, [[1], [2], [3], {a: 4}])
-          yield (done) => server.close(done)
+          return (done) => server.close(done)
         })(callback)
       })
       server.getAuthenticator = function () {
@@ -344,19 +345,18 @@ tman.suite('Server & Client', function () {
       let port = _port++
       let auth = new net.Auth('secretxxx')
       let server = new net.Server(function (socket) {
+        let result = []
         thunk(function * () {
-          let result = []
-
           for (let value of socket) {
             let message = yield value
-            if (!message) continue
             yield socket.handleJsonRpc(message.payload, function (jsonRpc) {
               result.push(jsonRpc.params)
               if (jsonRpc.name === 'request') this.throw('some error', 499, result)
             })
           }
-
-          yield (done) => server.close(done)
+        })((err) => {
+          assert.strictEqual(err instanceof Error, true)
+          return (done) => server.close(done)
         })(callback)
       })
       server.getAuthenticator = function () {
@@ -430,10 +430,11 @@ tman.suite('Server & Client', function () {
       thunk(function * () {
         for (let value of socket) {
           let message = yield value
-          if (!message) continue
           socket.success(message.payload.id, message.payload.params.index)
         }
-      })()
+      })((err) => {
+        assert.strictEqual(err instanceof Error, true)
+      })
     })
     server.getAuthenticator = function () {
       return (signature) => auth.verify(signature)
@@ -493,7 +494,9 @@ tman.it('Chaos', function * () {
           thunk.delay(latency)(() => socket.success(message.payload.id, message.payload.params.id))
         }
       }
-    })()
+    })((err) => {
+      assert.strictEqual(err instanceof Error, true)
+    })
   })
   server.getAuthenticator = function () {
     return (signature) => auth.verify(signature)

@@ -78,7 +78,10 @@ const server = new net.Server(function (socket) {
         socket.success(message.payload.id, message.payload.params)
       }
     }
-  })(() => process.exit(0))
+  })((err) => {
+    console.log(err)
+    process.exit(0)
+  })
 }).listen(8000)
 
 const client = new net.Client().connect(8000)
