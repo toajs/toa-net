@@ -181,7 +181,8 @@ tman.suite('Server & Client', function () {
         assert.deepEqual(result, [[1], [2], [3], {a: 4}])
         yield (done) => server.close(done)
       })((err) => {
-        assert.strictEqual(err.message, 'The socket is closed!')
+        assert.strictEqual(err.code, 'ECONNRESET')
+        assert.strictEqual(err.message, 'socket hang up')
         assert.deepEqual(result, [[1], [2], [3], {a: 4}])
         return (done) => server.close(done)
       })(callback)
