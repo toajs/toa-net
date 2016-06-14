@@ -316,7 +316,7 @@ tman.suite('Server & Client', function () {
             })
           }
         })((err) => {
-          assert.strictEqual(err instanceof Error, true)
+          assert.strictEqual(err.code, 'ECONNRESET')
           assert.deepEqual(result, [[1], [2], [3], {a: 4}])
           return (done) => server.close(done)
         })(callback)
@@ -483,20 +483,22 @@ tman.it('Chaos', function * () {
     location: 'zhangjiang, shanghai, china'
   }
   let count = 0
+  let maxIterQueLen = 0
   let auth = new net.Auth('secretxxx')
   let server = new net.Server(function (socket) {
     thunk(function * () {
       for (let value of socket) {
+        maxIterQueLen = Math.max(maxIterQueLen, socket.iterQueLen)
+
         let message = yield value
-        if (message) {
-          count += JSON.stringify(message.payload).length
-          // socket.success(message.payload.id, message.payload.params.id)
-          let latency = 100
-          thunk.delay(latency)(() => socket.success(message.payload.id, message.payload.params.id))
-        }
+        count += JSON.stringify(message.payload).length
+        // socket.success(message.payload.id, message.payload.params.id)
+        let latency = 100
+        thunk.delay(latency)(() => socket.success(message.payload.id, message.payload.params.id))
       }
     })((err) => {
-      assert.strictEqual(err instanceof Error, true)
+      assert.strictEqual(err.code, 'ECONNRESET')
+      assert.strictEqual(maxIterQueLen > 0, true)
     })
   })
   server.getAuthenticator = function () {
