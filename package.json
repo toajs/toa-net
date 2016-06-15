@@ -32,6 +32,7 @@
     "thunks": "^4.2.1"
   },
   "devDependencies": {
+    "grpc": "^0.14.1",
     "ilog": "^1.0.3",
     "standard": "^7.1.2",
     "tman": "^0.9.9"

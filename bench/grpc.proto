@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.pingpong";
+option java_outer_classname = "PingPongProto";
+option objc_class_prefix = "HLW";
+
+package pingpong;
+
+service PingPong {
+  // Sends a greeting
+  rpc ping (PingRequest) returns (PongReply) {}
+}
+
+message PingRequest {
+  string method = 1;
+}
+
+message PongReply {
+  string result = 1;
+}
