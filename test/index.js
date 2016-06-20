@@ -507,9 +507,11 @@ tman.it('Chaos', function * () {
   yield (done) => server.listen(port, done)
 
   let client = new net.Client()
+  let drainCount = 0
   client.getSignature = function () {
     return auth.sign({id: 'test'})
   }
+  client.on('drain', () => drainCount++)
   client.connect(port)
   yield (done) => client.once('connect', done)
 
@@ -528,6 +530,8 @@ tman.it('Chaos', function * () {
   }
   // wait for all request.
   yield queue
+
+  assert.strictEqual(drainCount > 0, true)
   time = Date.now() - time
   console.log('\nFinished', time, 'ms', (100000 / (time / 1000)).toFixed(2), 'ops/s', (count / time).toFixed(2), 'kb/s')
 

@@ -18,7 +18,7 @@ thunk(function * () {
   let count = 100000
   let finish = 0
   let queue = []
-  let cocurrency = 10000
+  let cocurrency = 1000
   let time = Date.now()
 
   while (count--) {
