@@ -151,7 +151,8 @@ tman.suite('Server & Client', function () {
       assert.strictEqual(err.code, 401)
       assert.strictEqual(err.data, 'Error: Invalid signature')
       assert.strictEqual(clientAuthorized, false)
-      client.destroy()
+    })
+    client.on('close', () => {
       server.close(callback)
     })
   })
