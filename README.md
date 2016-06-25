@@ -329,6 +329,7 @@ let signature = auth.decode(signature)
 
 ### Class toaNet.Resp
 ### Class toaNet.Queue
+### Class toaNet.Socket
 ### Class toaNet.RPCCommand
 ### toaNet.jsonrpc
 
