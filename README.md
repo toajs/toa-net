@@ -13,6 +13,11 @@ JSON-RPC 2.0 client/server over TCP net.
 3. Use [JSON Web Signatures](http://self-issued.info/docs/draft-ietf-jose-json-web-signature.html) as authentication protocol.
 4. Implemented ES6 Iterable protocol.
 
+## Implementations:
+
+- [snapper-core](https://github.com/teambition/snapper-core) Teambition push messaging service, based on redis.
+- [snapper-producer](https://github.com/teambition/snapper-producer) Snapper producer client for node.js.
+
 ## Examples
 
 ### [Simple](https://github.com/toajs/toa-net/tree/master/example/simple.js)
