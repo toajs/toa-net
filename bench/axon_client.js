@@ -1,19 +1,22 @@
 'use strict'
 
-const path = require('path')
-const grpc = require('grpc')
 const ilog = require('ilog')
 const thunk = require('thunks')()
-const pingpong = grpc.load(path.join(__dirname, 'grpc.proto')).pingpong
-const client = new pingpong.PingPong('localhost:3002', grpc.credentials.createInsecure())
+const axon = require('axon')
+const sock = axon.socket('req')
 
-function request (params) {
-  return thunk((done) => client.ping(params, done))
+sock.bind(3002)
+
+function request (method) {
+  return thunk(function (done) {
+    sock.send(method, (res) => done(null, res))
+  })
 }
 
 thunk(function * () {
-  yield (done) => grpc.waitForClientReady(client, Infinity, done)
-  ilog.info('Connected to localhost:3002')
+  yield (done) => sock.on('bind', done)
+
+  ilog.info('Connected to 3002')
 
   let count = 100000
   let finish = 0
@@ -22,7 +25,7 @@ thunk(function * () {
   let time = Date.now()
 
   while (count--) {
-    queue.push(request({method: 'Ping'})((_, res) => {
+    queue.push(request('ping')((_, res) => {
       if (!(finish++ % 1000)) process.stdout.write('.')
     }))
     if (queue.length >= cocurrency) yield queue.shift()

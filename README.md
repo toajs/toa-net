@@ -99,9 +99,10 @@ client.request('echo', {a: 4})((err, res) => {
 
 ## Bench
 
-### gRPC vs toa-net, 100000 Ping/Pong messages
+### gRPC vs axon vs toa-net, 100000 Ping/Pong messages
 1. gRPC, no-delay: **1000 cocurrency, 25696ms, 3891.66ops/s**
-2. toa-net, no-delay: **1000 cocurrency, 3201ms, 31240.24ops/s**
+2. axon, no-delay: **1000 cocurrency, 6405ms, 15612.80ops/s**
+3. toa-net, no-delay: **1000 cocurrency, 3201ms, 31240.24ops/s**
 
 ### 100000 Ping/Pong messages
 1. local -> local, no-delay: **1000 cocurrency, 3180ms, 31446ops/s**
