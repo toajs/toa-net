@@ -26,8 +26,6 @@ JSON-RPC 2.0 client/server over TCP net.
 const net = require('toa-net')
 const auth = new net.Auth('secretxxx')
 const server = new net.Server(function (socket) {
-  console.log(socket.session) // { exp: 1463131669, id: 'example' }
-
   socket.on('message', (message) => {
     console.log(message)
     // { payload: { jsonrpc: '2.0', method: 'hello', params: [ 1 ] },
@@ -40,17 +38,19 @@ const server = new net.Server(function (socket) {
     }
   })
 }).listen(8000)
+
 // Enable authentication for server
 server.getAuthenticator = function () {
   return (signature) => auth.verify(signature)
 }
 
-const client = new net.Client({auth: auth.sign({id: 'example'})})
+const client = new net.Client()
 // Enable authentication for client
 client.getSignature = function () {
-  return auth.sign({id: 'clientId'})
+  return auth.sign({id: 'clientIdxxx'})
 }
 client.connect(8000)
+
 client.notification('hello', [1])
 client.notification('hello', [2])
 client.notification('hello', [3])
@@ -69,8 +69,10 @@ Socket is async iterable object!
 const thunk = require('thunks')()
 const net = require('toa-net')
 
+// 创建服务器
 const server = new net.Server(function (socket) {
   thunk(function * () {
+    // 高能！！！异步迭代 socket 接收的数据，socket 关闭后迭代结束
     for (let value of socket) {
       let message = yield value
       console.log(message)
@@ -89,14 +91,15 @@ const server = new net.Server(function (socket) {
   })
 }).listen(8000)
 
+// 创建客户端
 const client = new net.Client().connect(8000)
-
+// 向服务器发出 notification
 client.notification('hello', [1])
 client.notification('hello', [2])
 client.notification('hello', [3])
+// 向服务器发出 RPC 请求，服务器将 echo 请求数据
 client.request('echo', {a: 4})((err, res) => {
   console.log(err, res) // null { a: 4 }
-
   client.destroy()
   server.close()
 })
@@ -323,6 +326,11 @@ Try decode the signature, return payload object if success, or `null`.
 ```js
 let signature = auth.decode(signature)
 ```
+
+### Class toaNet.Resp
+### Class toaNet.Queue
+### Class toaNet.RPCCommand
+### toaNet.jsonrpc
 
 ## License
 Toa-net is licensed under the [MIT](https://github.com/toajs/toa-net/blob/master/LICENSE) license.  

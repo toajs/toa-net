@@ -7,8 +7,6 @@ const net = require('..')
 
 const auth = new net.Auth('secretxxx')
 const server = new net.Server(function (socket) {
-  console.log(socket.session) // { exp: 1463131669, id: 'example' }
-
   socket.on('message', (message) => {
     console.log(message)
     // { payload: { jsonrpc: '2.0', method: 'hello', params: [ 1 ] },
@@ -30,7 +28,7 @@ server.getAuthenticator = function () {
 const client = new net.Client()
 // Enable authentication for client
 client.getSignature = function () {
-  return auth.sign({id: 'clientId'})
+  return auth.sign({id: 'clientIdxxx'})
 }
 client.connect(8000)
 
