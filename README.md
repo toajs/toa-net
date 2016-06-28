@@ -153,7 +153,7 @@ const server = new net.Server(function (socket) {
   socket.on('message', (message) => {
     console.log(message)
   })
-}, {auth: auth}).listen(8000)
+}).listen(8000)
 ```
 
 1. `connectionListener`: *Required*, Type: `Function`.
@@ -191,6 +191,8 @@ server.getAuthenticator = function () {
 #### server.listen(...)
 Same as node.js `server.listen`
 
+---
+
 ### Class toaNet.Client
 
 #### Event: 'close'
@@ -202,12 +204,27 @@ Same as node.js `server.listen`
 #### Event: 'error'
 #### Event: 'timeout'
 
-#### new toaNet.Client()
+#### new toaNet.Client([options])
 Creates RPC client.
 
 ```js
 const client = new net.Client().connect(8000)
 ```
+
+- `options.retryDelay`: *Optional*, Type: `Number`, Default: `500` ms.
+  Sets time interval for reconnection.
+
+- `options.maxAttempts`: *Optional*, Type: `Number`, Default: `50`.
+  Sets max attempts for reconnection.
+
+- `options.tcpTimeout`: *Optional*, Type: `Number`, Default: `0`.
+  Sets the socket to timeout after timeout milliseconds of inactivity on the socket.
+
+- `options.tcpNoDelay`: *Optional*, Type: `Boolean`, Default: `true`.
+  Disables the Nagle algorithm.
+
+- `options.tcpKeepAlive`: *Optional*, Type: `Boolean`, Default: `true`.
+  Enable/disable keep-alive functionality, and optionally set the initial delay before the first keepalive probe is sent on an idle socket.
 
 #### client.connect(...)
 Same as node.js `socket.connect`
@@ -290,6 +307,8 @@ client.error(1, new Error('some error'))
 
 #### client\[Symbol.iterator\]()
 
+---
+
 ### Class toaNet.Auth
 
 #### new toaNet.Auth(options)
@@ -326,6 +345,8 @@ Try decode the signature, return payload object if success, or `null`.
 ```js
 let signature = auth.decode(signature)
 ```
+
+---
 
 ### Class toaNet.Resp
 ### Class toaNet.Queue
