@@ -5,6 +5,8 @@ const net = require('..')
 const thunk = require('thunks')()
 const auth = new net.Auth('secretxxx')
 
+// net.useMsgp()
+
 const server = new net.Server(function (socket) {
   let address = socket.address()
   ilog.info(`[${address.address}]:${address.port} connected`)

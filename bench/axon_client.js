@@ -18,7 +18,7 @@ thunk(function * () {
 
   ilog.info('Connected to 3002')
 
-  let count = 100000
+  let count = 1000000
   let finish = 0
   let queue = []
   let cocurrency = 1000
@@ -33,7 +33,7 @@ thunk(function * () {
   // wait for all request.
   yield queue
   time = Date.now() - time
-  ilog('\nFinished,', cocurrency, 'cocurrency,', time + 'ms,', (100000 / (time / 1000)).toFixed(2) + 'ops/s')
+  ilog('\nFinished,', cocurrency, 'cocurrency,', time + ' ms,', (1000000 / (time / 1000)).toFixed(2) + ' ops/s')
 
   process.exit(0)
 })(ilog.error)

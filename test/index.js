@@ -8,6 +8,8 @@ const assert = require('assert')
 const thunk = require('thunks')()
 const net = require('..')
 
+// net.useMsgp()
+
 var _port = 10000
 
 tman.suite('Auth', function () {

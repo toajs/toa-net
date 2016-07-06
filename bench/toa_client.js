@@ -6,6 +6,8 @@ const thunk = require('thunks')()
 const auth = new net.Auth('secretxxx')
 const client = new net.Client()
 
+// net.useMsgp()
+
 client.getSignature = function () {
   return auth.sign({id: 'test'})
 }
@@ -15,7 +17,7 @@ thunk(function * () {
   yield (done) => client.once('auth', done.bind(null, null))
   ilog.info(`Connected to [${client.socket.remoteAddress}]:${client.socket.remotePort}`)
 
-  let count = 100000
+  let count = 1000000
   let finish = 0
   let queue = []
   let cocurrency = 1000
@@ -30,7 +32,9 @@ thunk(function * () {
   // wait for all request.
   yield queue
   time = Date.now() - time
-  ilog('\nFinished,', cocurrency, 'cocurrency,', time + 'ms,', (100000 / (time / 1000)).toFixed(2) + 'ops/s')
+  ilog('\nFinished,', cocurrency, 'cocurrency,', time + ' ms,',
+    (client.socket.bytesWritten / 1000).toFixed(2), 'kb',
+    (1000000 / (time / 1000)).toFixed(2) + ' ops/s')
 
   client.destroy()
 })(ilog.error)
