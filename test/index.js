@@ -12,7 +12,68 @@ const net = require('..')
 
 var _port = 10000
 
-tman.suite('Auth', function () {
+tman.suite('Class RingPool', function () {
+  tman.it('new RingPool()', function () {
+    let pool = new net.RingPool()
+    assert.strictEqual(pool.length, 0)
+    assert.throws(() => pool.add())
+    assert.throws(() => pool.add(false))
+    assert.throws(() => pool.add(null))
+    assert.strictEqual(pool.next(), null)
+
+    let obj0 = {}
+    assert.strictEqual(pool.add(obj0), 1)
+    assert.strictEqual(pool.length, 1)
+    let obj1 = {}
+    assert.strictEqual(pool.add(obj1), 2)
+    assert.strictEqual(pool.length, 2)
+    let obj2 = {}
+    assert.strictEqual(pool.add(obj2), 3)
+    assert.strictEqual(pool.length, 3)
+
+    assert.strictEqual(pool.next(), obj0)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.next(), obj2)
+    assert.strictEqual(pool.next(), obj0)
+
+    assert.strictEqual(pool.remove(obj0), 2)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.next(), obj2)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.remove(obj2), 1)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.length, 1)
+
+    assert.strictEqual(pool.reset(), pool)
+    assert.strictEqual(pool.next(), null)
+    assert.strictEqual(pool.length, 0)
+
+    for (let val of pool) throw new Error('should not run: ' + val)
+
+    assert.strictEqual(pool.add(obj0), 1)
+    assert.strictEqual(pool.next(), obj0)
+    assert.strictEqual(pool.next(), obj0)
+    assert.strictEqual(pool.add(obj1), 2)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.next(), obj0)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.add(obj2), 3)
+    assert.strictEqual(pool.next(), obj2)
+    assert.strictEqual(pool.next(), obj0)
+    assert.strictEqual(pool.next(), obj1)
+    assert.strictEqual(pool.next(), obj2)
+
+    let res = []
+    for (let val of pool) res.push(val)
+    assert.deepEqual(pool.pool, res)
+
+    assert.strictEqual(pool.remove(obj1), 2)
+    assert.strictEqual(pool.next(), obj0)
+  })
+})
+
+tman.suite('Class Auth', function () {
   tman.it('work with a secret', function () {
     let auth = new net.Auth('secretxxx')
     let payload = {id: 'test'}
@@ -50,7 +111,7 @@ tman.suite('Auth', function () {
   })
 })
 
-tman.suite('Server & Client', function () {
+tman.suite('Class Server & Client', function () {
   this.timeout(10000)
 
   tman.it('work without auth', function * () {

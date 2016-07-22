@@ -5,7 +5,7 @@ const thunk = require('thunks')()
 const axon = require('axon')
 const sock = axon.socket('req')
 
-sock.bind(3002)
+sock.connect(3002)
 
 function request (method) {
   return thunk(function (done) {
@@ -14,11 +14,12 @@ function request (method) {
 }
 
 thunk(function * () {
-  yield (done) => sock.on('bind', done)
+  yield (done) => sock.on('connect', () => done())
 
   ilog.info('Connected to 3002')
 
-  let count = 1000000
+  let total = 5000000
+  let count = total
   let finish = 0
   let queue = []
   let cocurrency = 1000
@@ -26,14 +27,16 @@ thunk(function * () {
 
   while (count--) {
     queue.push(request('ping')((_, res) => {
-      if (!(finish++ % 1000)) process.stdout.write('.')
+      if (!(finish++ % 10000)) process.stdout.write('.')
     }))
     if (queue.length >= cocurrency) yield queue.shift()
   }
   // wait for all request.
   yield queue
   time = Date.now() - time
-  ilog('\nFinished,', cocurrency, 'cocurrency,', time + ' ms,', (1000000 / (time / 1000)).toFixed(2) + ' ops/s')
+  ilog('\nFinished,', cocurrency + ' cocurrency,', time + ' ms,',
+    (sock.socks[0].bytesWritten / 1000).toFixed(2) + ' kb',
+    (total / (time / 1000)).toFixed(2) + ' ops')
 
   process.exit(0)
 })(ilog.error)

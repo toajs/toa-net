@@ -15,7 +15,8 @@ thunk(function * () {
   yield (done) => grpc.waitForClientReady(client, Infinity, done)
   ilog.info('Connected to localhost:3002')
 
-  let count = 1000000
+  let total = 5000000
+  let count = total
   let finish = 0
   let queue = []
   let cocurrency = 1000
@@ -23,14 +24,15 @@ thunk(function * () {
 
   while (count--) {
     queue.push(request({method: 'Ping'})((_, res) => {
-      if (!(finish++ % 1000)) process.stdout.write('.')
+      if (!(finish++ % 10000)) process.stdout.write('.')
     }))
     if (queue.length >= cocurrency) yield queue.shift()
   }
   // wait for all request.
   yield queue
   time = Date.now() - time
-  ilog('\nFinished,', cocurrency, 'cocurrency,', time + ' ms,', (1000000 / (time / 1000)).toFixed(2) + ' ops/s')
+  ilog('\nFinished,', cocurrency + ' cocurrency,', time + ' ms,',
+    (total / (time / 1000)).toFixed(2) + ' ops')
 
   process.exit(0)
 })(ilog.error)

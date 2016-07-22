@@ -107,16 +107,16 @@ client.request('echo', {a: 4})((err, res) => {
 
 ## Bench
 
-### gRPC vs axon vs toa-net, 100000 Ping/Pong messages
-1. gRPC, no-delay: **1000 cocurrency, 25696ms, 3891.66ops/s**
-2. axon, no-delay: **1000 cocurrency, 6405ms, 15612.80ops/s**
-3. toa-net, no-delay: **1000 cocurrency, 3201ms, 31240.24ops/s**
+### gRPC vs axon vs toa-net, 5000000 Ping/Pong messages
+1. gRPC, no-delay: **1000 cocurrency, 1240066 ms, 4032.04 ops**
+2. axon, no-delay: **1000 cocurrency, 293136 ms, 143888.89 kb 17056.93 ops**
+3. toa-net, no-delay: **1000 cocurrency, 146728 ms, 258272.57 kb 34076.66 ops**
 
 ### 100000 Ping/Pong messages
-1. local -> local, no-delay: **1000 cocurrency, 3180ms, 31446ops/s**
-2. local -> local, delay 1000ms: **1000 cocurrency, 100590ms, 994ops/s**
-3. local -> local, delay 1000ms: **5000 cocurrency, 20869ms, 4791ops/s**
-4. local -> local, delay 1000ms: **10000 cocurrency, 11074ms, 9030ops/s**
+1. local -> local, no-delay: **1000 cocurrency, 3180ms, 31446 ops**
+2. local -> local, delay 1000ms: **1000 cocurrency, 100590ms, 994 ops**
+3. local -> local, delay 1000ms: **5000 cocurrency, 20869ms, 4791 ops**
+4. local -> local, delay 1000ms: **10000 cocurrency, 11074ms, 9030 ops**
 
 ### 10000 simple messages, 1000 cocurrency
 ```js
@@ -127,9 +127,9 @@ client.request('echo', {a: 4})((err, res) => {
   location: 'zhangjiang, shanghai, china'
 }
 ```
-1. aliyun -> aws: **264321ms, 37ops/s, 4.61kb/s**
-2. aws -> aliyun: **82129ms, 121ops/s, 14.84kb/s**
-3. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 1241ops/s, 151.30kb/s**
+1. aliyun -> aws: **264321ms, 37 ops, 4.61 kb/s**
+2. aws -> aliyun: **82129ms, 121 ops, 14.84 kb/s**
+3. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 1241 ops, 151.30 kb/s**
 
 ## Install
 
@@ -184,7 +184,7 @@ server.getAuthenticator = function () {
 #### server.address()
 Returns the bound address.
 
-#### server.connections: RingPoll
+#### server.connections: RingPool
 ##### server.connections.length
 Returns the number of concurrent connections on the server.
 
