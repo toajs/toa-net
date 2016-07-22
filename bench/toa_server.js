@@ -5,7 +5,7 @@ const net = require('..')
 const thunk = require('thunks')()
 const auth = new net.Auth('secretxxx')
 
-// net.useMsgp()
+net.useMsgp()
 
 const server = new net.Server(function (socket) {
   let address = socket.address()

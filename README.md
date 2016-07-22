@@ -9,7 +9,7 @@ JSON-RPC 2.0 client/server over TCP net.
 ## Features
 
 1. Use [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification) as RPC protocol.
-2. Use [RESP (Redis Serialization Protocol)](http://redis.io/topics/protocol) as message protocol.
+2. Use [RESP (Redis Serialization Protocol)](http://redis.io/topics/protocol) or [MsgP (Byte Message Protocol)](https://github.com/zensh/msgp-node) as message protocol.
 3. Use [JSON Web Signatures](http://self-issued.info/docs/draft-ietf-jose-json-web-signature.html) as authentication protocol.
 4. Implemented ES6 Iterable protocol.
 
@@ -163,7 +163,6 @@ const server = new net.Server(function (socket) {
 #### Event: 'listening'
 
 #### server.getAuthenticator()
-
 Abstract method. Should be overridden to enable authentication.
 
 Default:
@@ -183,10 +182,17 @@ server.getAuthenticator = function () {
 ```
 
 #### server.address()
+Returns the bound address.
 
-#### server.getConnections()
+#### server.connections: RingPoll
+##### server.connections.length
+Returns the number of concurrent connections on the server.
+
+##### server.connections.next()
+Return a socket in turn. Return `null` if no socket available.
 
 #### server.close([callback])
+Closes the server.
 
 #### server.listen(...)
 Same as node.js `server.listen`

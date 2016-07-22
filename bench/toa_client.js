@@ -6,7 +6,7 @@ const thunk = require('thunks')()
 const auth = new net.Auth('secretxxx')
 const client = new net.Client()
 
-// net.useMsgp()
+net.useMsgp()
 
 client.getSignature = function () {
   return auth.sign({id: 'test'})
@@ -25,7 +25,7 @@ thunk(function * () {
 
   while (count--) {
     queue.push(client.request('ping')((_, res) => {
-      if (!(finish++ % 1000)) process.stdout.write('.')
+      if (!(finish++ % 10000)) process.stdout.write('.')
     }))
     if (queue.length >= cocurrency) yield queue.shift()
   }

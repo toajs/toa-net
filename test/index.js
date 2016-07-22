@@ -389,7 +389,6 @@ tman.suite('Server & Client', function () {
   tman.it('reconnect when server restart', function (callback) {
     let port = _port++
     let server = new net.Server(function (socket) {
-      assert.strictEqual(this.connections[socket.sid], socket)
       socket.on('error', (err) => {
         assert.strictEqual(err instanceof Error, true)
       })
