@@ -114,6 +114,46 @@ tman.suite('Class Auth', function () {
 tman.suite('Class Server & Client', function () {
   this.timeout(10000)
 
+  tman.it('client\'s connect options', function * () {
+    let port = _port++
+    let server = new net.Server(function (socket) {})
+    yield (done) => server.listen(port, done)
+
+    // connect(port)
+    let client = new net.Client()
+    client.connect(port)
+    assert.strictEqual(client.connectOptions.port, port)
+    yield (done) => client.on('connect', done)
+    client.destroy()
+
+    // connect(port, host)
+    client = new net.Client()
+    client.connect(port, '127.0.0.1')
+    assert.strictEqual(client.connectOptions.port, port)
+    yield (done) => client.on('connect', done)
+    client.destroy()
+
+    // connect('tcp' + host + port)
+    client = new net.Client()
+    client.connect('tcp://127.0.0.1:' + port)
+    assert.strictEqual(client.connectOptions.port, port)
+    yield (done) => client.on('connect', done)
+    client.destroy()
+
+    // connect(options)
+    client = new net.Client()
+    client.connect({port: port})
+    assert.strictEqual(client.connectOptions.port, port)
+    yield (done) => client.on('connect', done)
+    client.destroy()
+
+    // connect(options, connectListener)
+    client = new net.Client()
+    yield (done) => client.connect({port: port}, () => done())
+    assert.strictEqual(client.connectOptions.port, port)
+    client.destroy()
+  })
+
   tman.it('work without auth', function * () {
     let port = _port++
     let server = new net.Server(function (socket) {
@@ -137,6 +177,9 @@ tman.suite('Class Server & Client', function () {
     assert.deepEqual(res, {a: 5})
     res = yield client.request('echo', {a: 6})
     assert.deepEqual(res, {a: 6})
+
+    assert.strictEqual(client.ntfyCount, 3)
+    assert.strictEqual(client.rpcCount, 3)
 
     client.destroy()
     yield (done) => server.close(done)

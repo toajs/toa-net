@@ -234,6 +234,9 @@ const client = new net.Client().connect(8000)
 
 #### client.connect(...)
 Same as node.js `socket.connect`
+```js
+client.connect('tcp://127.0.0.1:33333')
+```
 
 #### client.getSignature()
 
@@ -357,6 +360,7 @@ let signature = auth.decode(signature)
 ### Class toaNet.Resp
 ### Class toaNet.Queue
 ### Class toaNet.Socket
+### Class toaNet.RingPool
 ### Class toaNet.RPCCommand
 ### toaNet.jsonrpc
 
