@@ -198,10 +198,11 @@ tman.suite('Class Server & Client', function () {
       server.close()
       done()
     })
-
+    assert.strictEqual(client.queLen, 0)
     client.notification('hello', [1])
     client.notification('hello', [2])
     client.notification('hello', [3])
+    assert.strictEqual(client.queLen > 0, true)
   })
 
   tman.it('work with auth', function * () {
@@ -287,12 +288,11 @@ tman.suite('Class Server & Client', function () {
     let auth = new net.Auth('secretxxx')
     let server = new net.Server(function (socket) {
       assert.strictEqual(socket.session.id, 'test')
-
+      assert.strictEqual(socket.iterQueLen, 0)
       let result = []
       thunk(function * () {
         for (let value of socket) {
           let message = yield value
-
           if (message.type === 'request') {
             assert.strictEqual(message.payload.method, 'echo')
             result.push(message.payload.params)
