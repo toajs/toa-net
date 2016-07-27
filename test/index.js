@@ -10,7 +10,7 @@ const net = require('..')
 
 // net.useMsgp()
 
-var _port = 10000
+var _port = 50000
 
 tman.suite('Class RingPool', function () {
   tman.it('new RingPool()', function () {
@@ -183,6 +183,25 @@ tman.suite('Class Server & Client', function () {
 
     client.destroy()
     yield (done) => server.close(done)
+  })
+
+  tman.it('should emit "drain"', function (done) {
+    let port = _port++
+    let server = new net.Server(function (socket) {})
+    server.listen(port)
+
+    let client = new net.Client()
+    client.connect(port)
+
+    client.once('drain', () => {
+      client.destroy()
+      server.close()
+      done()
+    })
+
+    client.notification('hello', [1])
+    client.notification('hello', [2])
+    client.notification('hello', [3])
   })
 
   tman.it('work with auth', function * () {
