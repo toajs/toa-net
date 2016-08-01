@@ -37,7 +37,8 @@ const server = new net.Server(function (socket) {
       socket.success(message.payload.id, message.payload.params)
     }
   })
-}).listen(8000)
+})
+server.listen(8000)
 
 // Enable authentication for server
 server.getAuthenticator = function () {
@@ -89,7 +90,8 @@ const server = new net.Server(function (socket) {
     console.log(err)
     process.exit(0)
   })
-}).listen(8000)
+})
+server.listen(8000)
 
 // 创建客户端
 const client = new net.Client().connect(8000)
@@ -153,7 +155,8 @@ const server = new net.Server(function (socket) {
   socket.on('message', (message) => {
     console.log(message)
   })
-}).listen(8000)
+})
+server.listen(8000)
 ```
 
 1. `connectionListener`: *Required*, Type: `Function`.

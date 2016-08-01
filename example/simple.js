@@ -18,7 +18,8 @@ const server = new net.Server(function (socket) {
       socket.success(message.payload.id, message.payload.params)
     }
   })
-}).listen(8000)
+})
+server.listen(8000)
 
 // Enable authentication for server
 server.getAuthenticator = function () {

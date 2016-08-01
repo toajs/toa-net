@@ -26,7 +26,8 @@ const server = new net.Server(function (socket) {
     console.log(err)
     process.exit(0)
   })
-}).listen(8000)
+})
+server.listen(8000)
 
 // 创建客户端
 const client = new net.Client().connect(8000)
