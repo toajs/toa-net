@@ -360,6 +360,8 @@ let signature = auth.decode(signature)
 
 ---
 
+## Advance API
+
 ### Class toaNet.Resp
 ### Class toaNet.Queue
 ### Class toaNet.Socket
