@@ -107,12 +107,12 @@ client.request('echo', {a: 4})((err, res) => {
 })
 ```
 
-## Bench
+## Bench https://github.com/toajs/toa-net/tree/master/bench
 
-### gRPC vs axon vs toa-net, 5000000 Ping/Pong messages
+### gRPC vs axon vs toa-net, 5000000 Ping/Pong messages, 1 TCP connection, Node.js v6
 1. gRPC, no-delay: **1000 cocurrency, 1240066 ms, 4032.04 ops**
-2. axon, no-delay: **1000 cocurrency, 293136 ms, 143888.89 kb 17056.93 ops**
-3. toa-net, no-delay: **1000 cocurrency, 146728 ms, 258272.57 kb 34076.66 ops**
+2. axon, no-delay: **1000 cocurrency, 204176 ms, 148888.89 kb, 24488.68 ops**
+3. toa-net, no-delay: **1000 cocurrency, 73789 ms, 263272.57 kb, 67760.78 ops**
 
 ### 100000 Ping/Pong messages
 1. local -> local, no-delay: **1000 cocurrency, 3180ms, 31446 ops**
