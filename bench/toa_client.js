@@ -6,7 +6,7 @@ const thunk = require('thunks')()
 const auth = new net.Auth('secretxxx')
 const client = new net.Client()
 
-net.useMsgp()
+// net.useMsgp()
 
 client.getSignature = function () {
   return auth.sign({id: 'test'})
@@ -37,5 +37,5 @@ thunk(function * () {
     (client.socket.bytesWritten / 1000).toFixed(2) + ' kb',
     (total / (time / 1000)).toFixed(2) + ' ops')
 
-  client.destroy()
+  process.exit(0)
 })(ilog.error)

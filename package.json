@@ -4,7 +4,7 @@
   "authors": [
     "Yan Qing <admin@zensh.com>"
   ],
-  "version": "1.3.13",
+  "version": "1.3.14",
   "main": "lib/index.js",
   "license": "MIT",
   "repository": {
@@ -30,7 +30,7 @@
     "jws": "^3.1.3",
     "msgp": "^1.0.0",
     "respjs": "^3.2.0",
-    "thunks": "^4.7.1"
+    "thunks": "^4.7.4"
   },
   "devDependencies": {
     "axon": "^2.0.2",
@@ -38,8 +38,8 @@
     "ilog": "^1.0.3",
     "istanbul": "^0.4.5",
     "msgpack5": "^3.4.0",
-    "standard": "^8.0.0",
-    "tman": "^1.4.5"
+    "standard": "^8.1.0",
+    "tman": "^1.4.7"
   },
   "scripts": {
     "test": "standard && tman",
