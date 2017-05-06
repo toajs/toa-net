@@ -4,7 +4,7 @@
   "authors": [
     "Yan Qing <admin@zensh.com>"
   ],
-  "version": "1.4.1",
+  "version": "1.5.0",
   "main": "lib/index.js",
   "license": "MIT",
   "repository": {
@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/toajs/toa-net",
   "engines": {
-    "node": ">= 4.0.0"
+    "node": ">= 4.5.0"
   },
   "keywords": [
     "JSON-RPC",
@@ -28,7 +28,6 @@
   "dependencies": {
     "jsonrpc-lite": "^1.2.3",
     "jws": "^3.1.4",
-    "msgp": "^1.0.0",
     "respjs": "^4.0.1",
     "thunks": "^4.7.6"
   },
@@ -37,8 +36,8 @@
     "ilog": "^1.0.3",
     "istanbul": "^0.4.5",
     "msgpack5": "^3.4.1",
-    "standard": "^10.0.1",
-    "tman": "^1.6.6"
+    "standard": "^10.0.2",
+    "tman": "^1.6.7"
   },
   "scripts": {
     "test": "standard && tman",
