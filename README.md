@@ -1,5 +1,5 @@
-Toa-net
-====
+# Toa-net
+
 JSON-RPC 2.0 client/server over TCP net.
 
 [![NPM version][npm-image]][npm-url]
@@ -9,11 +9,11 @@ JSON-RPC 2.0 client/server over TCP net.
 ## Features
 
 1. Use [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification) as RPC protocol.
-2. Use [RESP (Redis Serialization Protocol)](http://redis.io/topics/protocol) or [MsgP (Byte Message Protocol)](https://github.com/zensh/msgp-node) as message protocol.
-3. Use [JSON Web Signatures](http://self-issued.info/docs/draft-ietf-jose-json-web-signature.html) as authentication protocol.
-4. Implemented ES6 Iterable protocol.
+1. Use [RESP (Redis Serialization Protocol)](http://redis.io/topics/protocol) or [MsgP (Byte Message Protocol)](https://github.com/zensh/msgp-node) as message protocol.
+1. Use [JSON Web Signatures](http://self-issued.info/docs/draft-ietf-jose-json-web-signature.html) as authentication protocol.
+1. Implemented ES6 Iterable protocol.
 
-## Implementations:
+## Implementations
 
 - [snapper-core](https://github.com/teambition/snapper-core) Teambition push messaging service, based on redis.
 - [snapper-producer](https://github.com/teambition/snapper-producer) Snapper producer client for node.js.
@@ -64,6 +64,7 @@ client.request('echo', {a: 4})((err, res) => {
 ```
 
 ### [Iterator](https://github.com/toajs/toa-net/tree/master/example/simple.js)
+
 Socket is async iterable object!
 
 ```js
@@ -110,17 +111,20 @@ client.request('echo', {a: 4})((err, res) => {
 ## Bench https://github.com/toajs/toa-net/tree/master/bench
 
 ### gRPC vs axon vs toa-net, 5000000 Ping/Pong messages, 1 TCP connection, Node.js v6
+
 1. gRPC, no-delay: **1000 cocurrency, 1240066 ms, 4032.04 ops**
-2. axon, no-delay: **1000 cocurrency, 204176 ms, 148888.89 kb, 24488.68 ops**
-3. toa-net, no-delay: **1000 cocurrency, 73789 ms, 263272.57 kb, 67760.78 ops**
+1. axon, no-delay: **1000 cocurrency, 204176 ms, 148888.89 kb, 24488.68 ops**
+1. toa-net, no-delay: **1000 cocurrency, 73789 ms, 263272.57 kb, 67760.78 ops**
 
 ### 100000 Ping/Pong messages
+
 1. local -> local, no-delay: **1000 cocurrency, 3180ms, 31446 ops**
-2. local -> local, delay 1000ms: **1000 cocurrency, 100590ms, 994 ops**
-3. local -> local, delay 1000ms: **5000 cocurrency, 20869ms, 4791 ops**
-4. local -> local, delay 1000ms: **10000 cocurrency, 11074ms, 9030 ops**
+1. local -> local, delay 1000ms: **1000 cocurrency, 100590ms, 994 ops**
+1. local -> local, delay 1000ms: **5000 cocurrency, 20869ms, 4791 ops**
+1. local -> local, delay 1000ms: **10000 cocurrency, 11074ms, 9030 ops**
 
 ### 10000 simple messages, 1000 cocurrency
+
 ```js
 // message
 {
@@ -129,9 +133,10 @@ client.request('echo', {a: 4})((err, res) => {
   location: 'zhangjiang, shanghai, china'
 }
 ```
+
 1. aliyun -> aws: **264321ms, 37 ops, 4.61 kb/s**
-2. aws -> aliyun: **82129ms, 121 ops, 14.84 kb/s**
-3. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 1241 ops, 151.30 kb/s**
+1. aws -> aliyun: **82129ms, 121 ops, 14.84 kb/s**
+1. aliyun -> proxy_cn -> fiber -> proxy_us -> aws: **8056ms, 1241 ops, 151.30 kb/s**
 
 ## Install
 
@@ -148,6 +153,7 @@ const toaNet = require('toa-net')
 ### Class toaNet.Server
 
 #### new toaNet.Server(connectionListener)
+
 Create RPC server.
 
 ```js
@@ -162,13 +168,17 @@ server.listen(8000)
 1. `connectionListener`: *Required*, Type: `Function`.
 
 #### Event: 'close'
+
 #### Event: 'error'
+
 #### Event: 'listening'
 
 #### server.getAuthenticator()
+
 Abstract method. Should be overridden to enable authentication.
 
 Default:
+
 ```js
 server.getAuthenticator = function () {
   return null // Disable authentication
@@ -176,6 +186,7 @@ server.getAuthenticator = function () {
 ```
 
 Enable authentication:
+
 ```js
 const auth = new net.Auth('secretxxx')
 
@@ -185,19 +196,25 @@ server.getAuthenticator = function () {
 ```
 
 #### server.address()
+
 Returns the bound address.
 
 #### server.connections: RingPool
+
 ##### server.connections.length
+
 Returns the number of concurrent connections on the server.
 
 ##### server.connections.next()
+
 Return a socket in turn. Return `null` if no socket available.
 
 #### server.close([callback])
+
 Closes the server.
 
 #### server.listen(...)
+
 Same as node.js `server.listen`
 
 ---
@@ -205,15 +222,23 @@ Same as node.js `server.listen`
 ### Class toaNet.Client
 
 #### Event: 'close'
+
 #### Event: 'connect'
+
 #### Event: 'auth'
+
 #### Event: 'message'
+
 #### Event: 'drain'
+
 #### Event: 'end'
+
 #### Event: 'error'
+
 #### Event: 'timeout'
 
 #### new toaNet.Client([options])
+
 Creates RPC client.
 
 ```js
@@ -236,7 +261,9 @@ const client = new net.Client().connect(8000)
   Enable/disable keep-alive functionality, and optionally set the initial delay before the first keepalive probe is sent on an idle socket.
 
 #### client.connect(...)
+
 Same as node.js `socket.connect`
+
 ```js
 client.connect('tcp://127.0.0.1:33333')
 ```
@@ -246,6 +273,7 @@ client.connect('tcp://127.0.0.1:33333')
 Abstract method. Should be overridden to enable authentication.
 
 Default:
+
 ```js
 client.getSignature = function () {
   return '' // Disable authentication
@@ -253,6 +281,7 @@ client.getSignature = function () {
 ```
 
 Enable authentication:
+
 ```js
 const auth = new net.Auth('secretxxx')
 
@@ -262,6 +291,7 @@ client.getSignature = function () {
 ```
 
 #### client.request(method[, params])
+
 Creates a JSON-RPC 2.0 request to another side. Returns thunk function.
 
 ```js
@@ -271,9 +301,10 @@ client.request('echo', {name: 'zensh'})((err, res) => {
 ```
 
 1. `method`: *Required*, Type: `String`.
-2. `params`: *Optional*, Type: `Object|Array`.
+1. `params`: *Optional*, Type: `Object|Array`.
 
 #### client.notification(method[, params])
+
 Creates a JSON-RPC 2.0 notification to another side. No return.
 
 ```js
@@ -281,9 +312,10 @@ client.notification('hello', {name: 'zensh'})
 ```
 
 1. `method`: *Required*, Type: `String`.
-2. `params`: *Optional*, Type: `Object|Array`.
+1. `params`: *Optional*, Type: `Object|Array`.
 
 #### client.success(id, result)
+
 Respond success result to the request of `id`. No return.
 
 ```js
@@ -291,9 +323,10 @@ client.success(1, 'OK')
 ```
 
 1. `id`: *Required*, Type: `String|Integer`, the request's `id`.
-2. `result`: *Required*, Type: `Mixed`.
+1. `result`: *Required*, Type: `Mixed`.
 
 #### client.error(id, error)
+
 Respond error to the request of `id`. No return.
 
 ```js
@@ -301,14 +334,18 @@ client.error(1, new Error('some error'))
 ```
 
 1. `id`: *Required*, Type: `String|Integer`, the request's `id`.
-2. `error`: *Required*, Type: `Error`.
+1. `error`: *Required*, Type: `Error`.
 
 #### client.createError(error[, code, data])
+
 #### client.createError(message[, code, data])
+
 #### client.createError(code[, data])
 
 #### client.throw(error[, code, data])
+
 #### client.throw(message[, code, data])
+
 #### client.throw(code[, data])
 
 #### client.handleJsonRpc(jsonRpc, handleFn)
@@ -324,6 +361,7 @@ client.error(1, new Error('some error'))
 ### Class toaNet.Auth
 
 #### new toaNet.Auth(options)
+
 Creates auth object for Server and Client.
 
 ```js
@@ -334,10 +372,11 @@ const auth = new net.Auth({
 ```
 
 1. `options.secrets`: *Required*, Type: `String` or a `Array` of string.
-2. `options.expiresIn`: *Optional*, Type: `Number`, Default: `3600` seconds.
-3. `options.algorithm`: *Optional*, Type: `String`, Default: `'HS256'`.
+1. `options.expiresIn`: *Optional*, Type: `Number`, Default: `3600` seconds.
+1. `options.algorithm`: *Optional*, Type: `String`, Default: `'HS256'`.
 
 #### auth.sign(payload)
+
 Returns a new signature string.
 
 ```js
@@ -345,6 +384,7 @@ let signature = auth.sign({id: 'xxxxxxId'})
 ```
 
 #### auth.verify(signature)
+
 Verify the signature, return payload object if success, or throw a error.
 
 ```js
@@ -352,6 +392,7 @@ let session = auth.verify(signature)
 ```
 
 #### auth.decode(signature)
+
 Try decode the signature, return payload object if success, or `null`.
 
 ```js
@@ -363,15 +404,21 @@ let signature = auth.decode(signature)
 ## Advance API
 
 ### Class toaNet.Resp
+
 ### Class toaNet.Queue
+
 ### Class toaNet.Socket
+
 ### Class toaNet.RingPool
+
 ### Class toaNet.RPCCommand
+
 ### toaNet.jsonrpc
 
 ## License
-Toa-net is licensed under the [MIT](https://github.com/toajs/toa-net/blob/master/LICENSE) license.  
-Copyright &copy; 2016 Toajs.
+
+Toa-net is licensed under the [MIT](https://github.com/toajs/toa-net/blob/master/LICENSE) license.
+Copyright &copy; 2016-2017 Toajs.
 
 [npm-url]: https://npmjs.org/package/toa-net
 [npm-image]: http://img.shields.io/npm/v/toa-net.svg
