@@ -418,7 +418,7 @@ let signature = auth.decode(signature)
 ## License
 
 Toa-net is licensed under the [MIT](https://github.com/toajs/toa-net/blob/master/LICENSE) license.
-Copyright &copy; 2016-2017 Toajs.
+Copyright &copy; 2016-2018 Toajs.
 
 [npm-url]: https://npmjs.org/package/toa-net
 [npm-image]: http://img.shields.io/npm/v/toa-net.svg
